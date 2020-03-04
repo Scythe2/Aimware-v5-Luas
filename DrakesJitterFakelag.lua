@@ -1,7 +1,7 @@
 local ref = gui.Reference("Misc", "Enhancement")
 
 -- BOXES
-local main_box = gui.Groupbox(ref, " JitterFakelag Settings",328, 712, 296, 400);
+local main_box = gui.Groupbox(ref, " JitterFakelag Settings",328, 321, 296, 400);
 
 
 --sliders

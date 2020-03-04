@@ -129,7 +129,7 @@ elseif is_knife then
       
       end
     local local_x, local_y, local_z = Entity:GetAbsOrigin()
-    local_z=local_z+45
+    local_z=(local_z+45)
     local vo_z = Entity:GetProp("localdata", "m_vecViewOffset[2]")-40
 local range
 local range2 

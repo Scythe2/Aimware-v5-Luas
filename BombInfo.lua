@@ -93,310 +93,328 @@ local outlineTexture = draw.CreateTexture(outlineRGBA, outlineW, outlineH)
 
 local defaultTexture = draw.CreateTexture()
 
-local function lerp_pos(x1, y1, z1, x2, y2, z2, percentage)
+local function lerp_pos(x1, y1, z1, x2, y2, z2, percentage) 
 
-local x = (x2 - x1) * percentage + x1
+local x = (x2 - x1) * percentage + x1 
 local y = (y2 - y1) * percentage + y1
-local z = (z2 - z1) * percentage + z1
+local z = (z2 - z1) * percentage + z1 
 
-    return x, y, z
-    
+	return x, y, z 
+	
 end
 
-local function sitename(site)
+local function sitename(site) 
 
-local a_x, a_y, a_z = entities.GetPlayerResources():GetProp("m_bombsiteCenterA")
-local b_x, b_y, b_z = entities.GetPlayerResources():GetProp("m_bombsiteCenterB")
-local site_x1, site_y1, site_z1 = site:GetMins()
-local site_x2, site_y2, site_z2 = site:GetMaxs()
+local avec = entities.GetPlayerResources():GetProp("m_bombsiteCenterA")
+local bvec = entities.GetPlayerResources():GetProp("m_bombsiteCenterB")
+local a_x, a_y, a_z = avec.x, avec.y, avec.z
+local b_x, b_y, b_z = bvec.x, bvec.y, bvec.z
+local sitevec1 = site:GetMins() 
+local sitevec2 = site:GetMaxs()
+local site_x1, site_y1, site_z1 = sitevec1.x, sitevec1.y, sitevec1.z 
+local site_x2, site_y2, site_z2 = sitevec2.x, sitevec2.y, sitevec2.z 
 local site_x, site_y, site_z = lerp_pos(site_x1, site_y1, site_z1, site_x2, site_y2, site_z2, 0.5)
-local distance_a, distance_b = vector.Distance(site_x, site_y, site_z, a_x, a_y, a_z), vector.Distance(site_x, site_y, site_z, b_x, b_y, b_z)
-
-    return distance_b > distance_a and "A" or "B"
+local sitevec = {x = site_x, y = site_y, z = site_z}
+local distance_a, distance_b = vector.Distance(sitevec, avec), vector.Distance(sitevec, bvec)
+ 
+	return distance_b > distance_a and "A" or "B" 
 
 end
 
 function EventHook(Event)
 
-    if Event:GetName() == "bomb_beginplant" then
-    
-        planter = client.GetPlayerNameByUserID(Event:GetInt("userid"))
-        plantingStarted = globals.CurTime()
-        bombsite = sitename(entities.GetByIndex(Event:GetInt("site")))
-        planting = true
-        
-        
-    end
-    
-    if Event:GetName() == "bomb_abortplant" then
-    
-        planting = false
-        
-    end
-    
-    if Event:GetName() == "bomb_begindefuse" then
-    
-        defusing = true;
-    
-    elseif Event:GetName() == "bomb_abortdefuse" then
-    
-        defusing = false;
-    
-    elseif Event:GetName() == "round_officially_ended" or Event:GetName() == "bomb_defused" or Event:GetName() == "bomb_exploded" then
-    
-        defusing = false;
-        planting = false
-        
-    end
-    
-    if Event:GetName() == "bomb_planted" then
-    
-        plantedat = globals.CurTime()
-        planting = false
-    
-    end
-    
+	if Event:GetName() == "bomb_beginplant" then 
+	
+		planter = client.GetPlayerNameByUserID(Event:GetInt("userid")) 
+		plantingStarted = globals.CurTime() 
+		bombsite = sitename(entities.GetByIndex(Event:GetInt("site")))
+		planting = true 
+		
+		
+	end
+	
+	if Event:GetName() == "bomb_abortplant" then 
+	
+		planting = false
+		
+	end
+	
+	if Event:GetName() == "bomb_begindefuse" then
+	
+		defusing = true;
+	
+	elseif Event:GetName() == "bomb_abortdefuse" then
+	
+		defusing = false;
+	
+	elseif Event:GetName() == "round_officially_ended" or Event:GetName() == "bomb_defused" or Event:GetName() == "bomb_exploded" then
+	
+		defusing = false;
+		planting = false
+	
+	end
+	
+	if Event:GetName() == "bomb_planted" then
+	
+		plantedat = globals.CurTime()
+		planting = false
+	
+	end
+	
 end
 
 function DrawingHook()
 
-    local font1 = draw.CreateFont("Verdana", 30)
-    local font2 = draw.CreateFont("Verdana", 23)
-    draw.SetFont(font1)
+	local font1 = draw.CreateFont("Verdana", 30)
+	local font2 = draw.CreateFont("Verdana", 23)
+	draw.SetFont(font1)
 
-    if planting == true then
+	if planting == true then
 
-        local Player = entities.GetLocalPlayer();
+		local Player = entities.GetLocalPlayer();
         local ScreenW, ScreenH = draw.GetScreenSize();
-        local PlantMath = (globals.CurTime() - plantingStarted) / 3.125
+		local PlantMath = (globals.CurTime() - plantingStarted) / 3.125
         local PlantTime = math.floor((((plantingStarted - globals.CurTime()) + 3.125) * 10)) / 10
-
-        draw.Color(75,225,0,255)
-        draw.Text(ScreenW/100, 2, bombsite .. " - Planting")
-        draw.TextShadow(ScreenW/100, 2, bombsite .. " - Planting")
-        draw.Color(255,255,255,255)
-        draw.SetFont(font2)
-        draw.Text(ScreenW/100, 53, planter .. " - " .. PlantTime .. "s")
-        draw.TextShadow(ScreenW/100, 53, planter .. " - " .. PlantTime .. "s")
-        draw.Color(0, 0, 0, 170);
-        draw.FilledRect( 0, 0, ScreenW/200, ScreenH );
-        draw.Color(0, 255, 0, 255);
-        draw.FilledRect( 0, ScreenH - (ScreenH * PlantMath), ScreenW/200, ScreenH );
-        draw.Color(255, 255, 255, 255);
-        if Player:GetTeamNumber() == 3 then
-        if Player:GetPropBool("m_bHasDefuser") == true then
-        draw.Color(255,255,255,255)
-        draw.SetTexture(iconTexture)
-        draw.FilledRect(ScreenW/100, 75, ScreenW/100 + 40, 115)
-        draw.SetTexture(outlineTexture)
-        draw.FilledRect(ScreenW/100, 75, ScreenW/100 + 40, 115)
-        draw.SetTexture(defaultTexture)
+        PlantTime = tostring(PlantTime)
+        if not string.find(PlantTime, "%.") then
+            PlantTime = PlantTime .. ".0"
         end
-        end
-        
-    end
 
-    if entities.FindByClass("CPlantedC4")[1] ~= nil then
+		draw.Color(75,225,0,255)
+		draw.TextShadow(ScreenW/100, 7, bombsite .. " - Planting")
+		draw.Color(255,255,255,255)
+		draw.SetFont(font2)
+		draw.TextShadow(ScreenW/100, 58, planter .. " - " .. PlantTime .. "s")
+		draw.Color(0, 0, 0, 170);
+		draw.FilledRect( 0, 0, ScreenW/200, ScreenH );
+		draw.Color(0, 255, 0, 255);
+		draw.FilledRect( 0, ScreenH - (ScreenH * PlantMath), ScreenW/200, ScreenH );
+		draw.Color(255, 255, 255, 255);
+		if Player:GetTeamNumber() == 3 then
+		if Player:GetPropBool("m_bHasDefuser") == true then
+		draw.Color(255,255,255,255)
+		draw.SetTexture(iconTexture)
+		draw.FilledRect(ScreenW/100, 75, ScreenW/100 + 40, 115)
+		draw.SetTexture(outlineTexture)
+		draw.FilledRect(ScreenW/100, 75, ScreenW/100 + 40, 115)
+		draw.SetTexture(defaultTexture)
+		end
+		end
+		
+	end
 
-        local Bomb = entities.FindByClass("CPlantedC4")[1];
+	if entities.FindByClass("CPlantedC4")[1] ~= nil then
 
-        if Bomb:GetProp("m_bBombTicking") and Bomb:GetProp("m_bBombDefused") == 0 and globals.CurTime() < Bomb:GetProp("m_flC4Blow") then
+		local Bomb = entities.FindByClass("CPlantedC4")[1];
 
-        local ScreenW, ScreenH = draw.GetScreenSize();
-        local Player = entities.GetLocalPlayer();
-        local bombtimer = math.floor((plantedat - globals.CurTime() + Bomb:GetProp("m_flTimerLength")) * 10) / 10
-        
-            if bombtimer < 0 then bombtimer = 0.0 end
+		if Bomb:GetProp("m_bBombTicking") and Bomb:GetProp("m_bBombDefused") == 0 and globals.CurTime() < Bomb:GetProp("m_flC4Blow") then
 
-            if defusing == true then
-            
-                local BombMath = ((globals.CurTime() - Bomb:GetProp("m_flDefuseCountDown")) * (0 - 1)) / ((Bomb:GetProp("m_flDefuseCountDown") - Bomb:GetProp("m_flDefuseLength")) - Bomb:GetProp("m_flDefuseCountDown")) + 1;
+		local ScreenW, ScreenH = draw.GetScreenSize(); 
+		local Player = entities.GetLocalPlayer(); 
+		local bombtimer = math.floor((plantedat - globals.CurTime() + Bomb:GetProp("m_flTimerLength")) * 10) / 10
+		
+			if bombtimer < 0 then bombtimer = 0.0 end
 
-                draw.Color(0, 0, 0, 170);
-                draw.FilledRect( 0, 0, ScreenW/200, ScreenH );
-                draw.Color(0, 135, 255, 255);
-                draw.FilledRect( 0, ScreenH * BombMath, ScreenW/200, ScreenH );
-                
-                if bombtimer < 5 then
-                
-                    draw.Color(240, 20, 0, 255);
-                    
-                elseif bombtimer < 10 then
-                
-                    draw.Color(210, 150, 0, 255);
-                
-                else
-                
-                    draw.Color(75, 225, 0, 255);
+			if defusing == true then
+			
+				local BombMath = ((globals.CurTime() - Bomb:GetProp("m_flDefuseCountDown")) * (0 - 1)) / ((Bomb:GetProp("m_flDefuseCountDown") - Bomb:GetProp("m_flDefuseLength")) - Bomb:GetProp("m_flDefuseCountDown")) + 1; 
 
-                end
-                
-                draw.SetFont(font1)
-                draw.Text( ScreenW/100, 2, bombsite .. " - " .. bombtimer .. "s");
-                draw.TextShadow( ScreenW/100, 2, bombsite .. " - " .. bombtimer .. "s");
-                draw.Color(255, 255, 255, 255);
+				draw.Color(0, 0, 0, 170);
+				draw.FilledRect( 0, 0, ScreenW/200, ScreenH );
+				draw.Color(0, 135, 255, 255);
+				draw.FilledRect( 0, ScreenH * BombMath, ScreenW/200, ScreenH );
+				
+				if bombtimer < 5 then
+				
+					draw.Color(240, 20, 0, 255);
+					
+				elseif bombtimer < 10 then
+				
+					draw.Color(210, 150, 0, 255);
+				
+				else
+				
+					draw.Color(75, 225, 0, 255);
 
-                if Bomb:GetProp("m_flDefuseCountDown") > Bomb:GetProp("m_flC4Blow") then
+				end
                 
-                    draw.Color(255, 0, 0, 255);
-                
-                end
-                
-                local defusetime = math.floor( (Bomb:GetProp("m_flDefuseCountDown") - globals.CurTime()) * 10 ) / 10
-                
-                draw.SetFont(font2)
-                draw.Text(ScreenW/100, 53, "Defusing - " .. defusetime .. "s")
-                draw.TextShadow(ScreenW/100, 53, "Defusing - " .. defusetime .. "s")
-                
-                if Player:GetTeamNumber() == 3 then
-                if Player:GetPropBool("m_bHasDefuser") == true then
-                draw.Color(255,255,255,255)
-                draw.SetTexture(iconTexture)
-                draw.FilledRect(ScreenW/100, 75, ScreenW/100 + 40, 115)
-                draw.SetTexture(outlineTexture)
-                draw.FilledRect(ScreenW/100, 75, ScreenW/100 + 40, 115)
-                draw.SetTexture(defaultTexture)
-                end
+                bombtimer = tostring(bombtimer)
+                if not string.find(bombtimer, "%.") then
+                    bombtimer = bombtimer .. ".0"
                 end
 
-            else
-            
-                local BombMath = ((globals.CurTime() - Bomb:GetProp("m_flC4Blow")) * (0 - 1)) / ((Bomb:GetProp("m_flC4Blow") - Bomb:GetProp("m_flTimerLength")) - Bomb:GetProp("m_flC4Blow")) + 1;
-                
-                draw.Color(0, 0, 0, 170);
-                draw.FilledRect( 0, 0, ScreenW/200, ScreenH );
-                draw.Color(0, 255, 0, 255);
-                draw.FilledRect( 0, ScreenH * BombMath, ScreenW/200, ScreenH );
-                
-                if bombtimer < 5 then
-                
-                    draw.Color(240, 20, 0, 255);
-                    
-                elseif bombtimer < 10 then
-                
-                    draw.Color(210, 150, 0, 255);
-                
-                else
-                
-                    draw.Color(75, 225, 0, 255);
+				draw.SetFont(font1)
+				draw.TextShadow( ScreenW/100, 7, bombsite .. " - " .. bombtimer .. "s");
+				draw.Color(255, 255, 255, 255);
 
-                end
+				if Bomb:GetProp("m_flDefuseCountDown") > Bomb:GetProp("m_flC4Blow") then
+				
+					draw.Color(255, 0, 0, 255);
+				
+				end
+				
+				local defusetime = math.floor( (Bomb:GetProp("m_flDefuseCountDown") - globals.CurTime()) * 10 ) / 10
                 
-                draw.SetFont(font1)
-                draw.Text( ScreenW/100, 2, bombsite .. " - " .. bombtimer .. "s");
-                draw.TextShadow( ScreenW/100, 2, bombsite .. " - " .. bombtimer .. "s");
-                
-                if Player:GetTeamNumber() == 3 then
-                if Player:GetPropBool("m_bHasDefuser") == true then
-                draw.Color(255,255,255,255)
-                draw.SetTexture(iconTexture)
-                draw.FilledRect(ScreenW/100, 75, ScreenW/100 + 40, 115)
-                draw.SetTexture(outlineTexture)
-                draw.FilledRect(ScreenW/100, 75, ScreenW/100 + 40, 115)
-                draw.SetTexture(defaultTexture)
-                end
+                defusetime = tostring(defusetime)
+                if not string.find(defusetime, "%.") then
+                    defusetime = defusetime .. ".0"
                 end
 
-            end
+				draw.SetFont(font2)
+				draw.TextShadow(ScreenW/100, 58, "Defusing - " .. defusetime .. "s")
+				
+				if Player:GetTeamNumber() == 3 then
+				if Player:GetPropBool("m_bHasDefuser") == true then
+				draw.Color(255,255,255,255)
+				draw.SetTexture(iconTexture)
+				draw.FilledRect(ScreenW/100, 75, ScreenW/100 + 40, 115)
+				draw.SetTexture(outlineTexture)
+				draw.FilledRect(ScreenW/100, 75, ScreenW/100 + 40, 115)
+				draw.SetTexture(defaultTexture)
+				end
+				end
 
-            if Player:IsAlive() and globals.CurTime() < Bomb:GetProp("m_flC4Blow") then
-            
-                local hpleft = math.floor(0.5 + BombDamage(Bomb, Player))
+			else
+			
+				local BombMath = ((globals.CurTime() - Bomb:GetProp("m_flC4Blow")) * (0 - 1)) / ((Bomb:GetProp("m_flC4Blow") - Bomb:GetProp("m_flTimerLength")) - Bomb:GetProp("m_flC4Blow")) + 1;
+				
+				draw.Color(0, 0, 0, 170);
+				draw.FilledRect( 0, 0, ScreenW/200, ScreenH );
+				draw.Color(0, 255, 0, 255);
+				draw.FilledRect( 0, ScreenH * BombMath, ScreenW/200, ScreenH );
+				
+				if bombtimer < 5 then
+				
+					draw.Color(240, 20, 0, 255);
+					
+				elseif bombtimer < 10 then
+				
+					draw.Color(210, 150, 0, 255);
+				
+				else
+				
+					draw.Color(75, 225, 0, 255);
+
+				end
                 
-                if hpleft >= Player:GetHealth() then
-                
-                    draw.Color(240, 20, 0, 255)
-                    draw.SetFont(font2)
-                    local formatting = draw.GetTextSize("FATAL")
-                    draw.Text(ScreenW/2 - formatting/2, ScreenH/20, "FATAL");
-                    draw.TextShadow(ScreenW/2 - formatting/2, ScreenH/20, "FATAL");
-                
-                elseif hpleft <= 0 then return
-                
-                else
-                
-                    draw.Color(75, 225, 0, 255)
-                    draw.SetFont(font2)
-                    local formattinghp = draw.GetTextSize("-" .. hpleft .. " HP")
-                    draw.Text(ScreenW/2 - formattinghp/2, ScreenH/20, "-" .. hpleft .. " HP");
-                    draw.TextShadow(ScreenW/2 - formattinghp/2, ScreenH/20, "-" .. hpleft .. " HP");
-                    
+                bombtimer = tostring(bombtimer)
+                if not string.find(bombtimer, "%.") then
+                    bombtimer = bombtimer .. ".0"
                 end
-            end
-            
-        elseif Bomb:GetProp("m_bBombTicking") and Bomb:GetProp("m_bBombDefused") == 0 and globals.CurTime() < (Bomb:GetProp("m_flC4Blow") + 2) then
-        
-            local ScreenW, ScreenH = draw.GetScreenSize();
-            local Player = entities.GetLocalPlayer();
-        
-            if Player:IsAlive() and globals.CurTime() < (Bomb:GetProp("m_flC4Blow") + 1) then
-            
-                local hpleft = math.floor(0.5 + BombDamage(Bomb, Player))
-                
-                if hpleft >= Player:GetHealth() then
-                
-                    draw.Color(240, 20, 0, 255)
-                    draw.SetFont(font2)
-                    local formatting = draw.GetTextSize("FATAL")
-                    draw.Text(ScreenW/2 - formatting/2, ScreenH/20, "FATAL");
-                    draw.TextShadow(ScreenW/2 - formatting/2, ScreenH/20, "FATAL");
-                
-                elseif hpleft <= 0 then return
-                
-                else
-                
-                    draw.Color(75, 225, 0, 255)
-                    draw.SetFont(font2)
-                    local formattinghp = draw.GetTextSize("-" .. hpleft .. " HP")
-                    draw.Text(ScreenW/2 - formattinghp/2, ScreenH/20, "-" .. hpleft .. " HP");
-                    draw.TextShadow(ScreenW/2 - formattinghp/2, ScreenH/20, "-" .. hpleft .. " HP");
-                    
-                end
-            end
-        end
-    end
+
+				draw.SetFont(font1)
+				draw.TextShadow( ScreenW/100, 7, bombsite .. " - " .. bombtimer .. "s");
+				
+				if Player:GetTeamNumber() == 3 then
+				if Player:GetPropBool("m_bHasDefuser") == true then
+				draw.Color(255,255,255,255)
+				draw.SetTexture(iconTexture)
+				draw.FilledRect(ScreenW/100, 75, ScreenW/100 + 40, 115)
+				draw.SetTexture(outlineTexture)
+				draw.FilledRect(ScreenW/100, 75, ScreenW/100 + 40, 115)
+				draw.SetTexture(defaultTexture)
+				end
+				end
+
+			end
+
+			if Player:IsAlive() and globals.CurTime() < Bomb:GetProp("m_flC4Blow") then
+			
+				local hpleft = math.floor(0.5 + BombDamage(Bomb, Player))
+				
+				if hpleft >= Player:GetHealth() then
+				
+					draw.Color(240, 20, 0, 255)
+					draw.SetFont(font2)
+					local formatting = draw.GetTextSize("FATAL")
+					draw.TextShadow(ScreenW/2 - formatting/2, ScreenH/20 + 5, "FATAL");
+				
+				elseif hpleft <= 0 then return
+				
+				else
+				
+					draw.Color(75, 225, 0, 255)
+					draw.SetFont(font2)
+					local formattinghp = draw.GetTextSize("-" .. hpleft .. " HP")
+					draw.TextShadow(ScreenW/2 - formattinghp/2, ScreenH/20 + 5, "-" .. hpleft .. " HP");
+					
+				end
+			end
+			
+		elseif Bomb:GetProp("m_bBombTicking") and Bomb:GetProp("m_bBombDefused") == 0 and globals.CurTime() < (Bomb:GetProp("m_flC4Blow") + 2) then
+		
+			local ScreenW, ScreenH = draw.GetScreenSize(); 
+			local Player = entities.GetLocalPlayer(); 
+		
+			if Player:IsAlive() and globals.CurTime() < (Bomb:GetProp("m_flC4Blow") + 1) then
+			
+				local hpleft = math.floor(0.5 + BombDamage(Bomb, Player))
+				
+				if hpleft >= Player:GetHealth() then
+				
+					draw.Color(240, 20, 0, 255)
+					draw.SetFont(font2)
+					local formatting = draw.GetTextSize("FATAL")
+					draw.TextShadow(ScreenW/2 - formatting/2, ScreenH/20 + 5, "FATAL");
+				
+				elseif hpleft <= 0 then return
+				
+				else
+				
+					draw.Color(75, 225, 0, 255)
+					draw.SetFont(font2)
+					local formattinghp = draw.GetTextSize("-" .. hpleft .. " HP")
+					draw.TextShadow(ScreenW/2 - formattinghp/2, ScreenH/20 + 5, "-" .. hpleft .. " HP");
+					
+				end
+			end
+		end
+	end
 end
 
 function BombDamage(Bomb, Player)
 
-    local C4Distance = math.sqrt((select(1,Bomb:GetAbsOrigin()) - select(1,Player:GetAbsOrigin())) ^ 2 +
-    (select(2,Bomb:GetAbsOrigin()) - select(2,Player:GetAbsOrigin())) ^ 2 +
-    (select(3,Bomb:GetAbsOrigin()) - select(3,Player:GetAbsOrigin())) ^ 2);
+    local playerOrigin = Player:GetAbsOrigin()
+    local bombOrigin = Bomb:GetAbsOrigin()
 
-    local Gauss = (C4Distance - 75.68) / 789.2
-    local flDamage = 450.7 * math.exp(-Gauss * Gauss);
+	local C4Distance = math.sqrt((bombOrigin.x - playerOrigin.x) ^ 2 + 
+	(bombOrigin.y - playerOrigin.y) ^ 2 + 
+	(bombOrigin.z - playerOrigin.z) ^ 2);
 
-        if Player:GetProp("m_ArmorValue") > 0 then
+	local Gauss = (C4Distance - 75.68) / 789.2 
+	local flDamage = 450.7 * math.exp(-Gauss * Gauss);
 
-            local flArmorRatio = 0.5;
-            local flArmorBonus = 0.5;
+		if Player:GetProp("m_ArmorValue") > 0 then
 
-            if Player:GetProp("m_ArmorValue") > 0 then
-            
-                local flNew = flDamage * flArmorRatio;
-                local flArmor = (flDamage - flNew) * flArmorBonus;
-            
-                if flArmor > Player:GetProp("m_ArmorValue") then
-                
-                    flArmor = Player:GetProp("m_ArmorValue") * (1 / flArmorBonus);
-                    flNew = flDamage - flArmor;
-                    
-                end
-            
-            flDamage = flNew;
+			local flArmorRatio = 0.5;
+			local flArmorBonus = 0.5;
 
-            end
+			if Player:GetProp("m_ArmorValue") > 0 then
+			
+				local flNew = flDamage * flArmorRatio;
+				local flArmor = (flDamage - flNew) * flArmorBonus;
+			 
+				if flArmor > Player:GetProp("m_ArmorValue") then
+				
+					flArmor = Player:GetProp("m_ArmorValue") * (1 / flArmorBonus);
+					flNew = flDamage - flArmor;
+					
+				end
+			 
+			flDamage = flNew;
 
-        end
-        
-    return math.max(flDamage, 0);
-    
+			end
+
+		end 
+		
+	return math.max(flDamage, 0);
+	
 end
 
 client.AllowListener( "bomb_beginplant" );
 client.AllowListener( "bomb_abortplant" );
 client.AllowListener( "bomb_begindefuse" );
-client.AllowListener( "bomb_abortdefuse" );
+client.AllowListener( "bomb_abortdefuse" ); 
 client.AllowListener( "bomb_defused" );
 client.AllowListener( "bomb_exploded" );
 client.AllowListener( "round_officially_ended" );
