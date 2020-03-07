@@ -1,7 +1,7 @@
 print("Loaded Aimware Aspect ratio Lua by Starlordaiden")
 local aspect_ratio_table = {};   
 local REF = gui.Reference("MISC", "Enhancement")
-local aspect_misc = gui.Groupbox(REF, "AspectRatio", 16, 570, 297)
+local aspect_misc = gui.Groupbox(REF, "AspectRatio", 330, 510, 297)
 local aspect_ratio_check = gui.Checkbox(aspect_misc, "aspect_ratio_check", "Aspect Ratio Changer", false);  
 local aspect_ratio_reference = gui.Slider(aspect_misc, "aspect_ratio_reference", "Force aspect ratio", 100, 1, 199)
 local function gcd(m, n)    while m ~= 0 do   m, n = math.fmod(n, m), m;  

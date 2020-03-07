@@ -1,11 +1,13 @@
 local primaryWeapons = {
-    { "SCAR 20 | G3SG1", "scar20" };
+    { "None", nil, nil };
+    {"SCAR 20 | G3SG1", "scar20" };
     { "SG 008", "ssg08" };
     { "AWP", "awp" };
     { "G3 SG1 | AUG", "sg556" };
     { "AK 47 | M4A1", "ak47" };
 };
 local secondaryWeapons = {
+    { "None", nil, nil };
     { "Dual Elites", "elite" };
     { "Desert Eagle | R8 Revolver", "deagle" };
     { "Five Seven | Tec 9", "tec9" };
@@ -37,7 +39,7 @@ local GRENADE_SLOT3 = gui.Combobox(GROUP, "autobuy.grenade3", "Grenade Slot #3",
 local GRENADE_SLOT4 = gui.Combobox(GROUP, "autobuy.grenade4", "Grenade Slot #4", granades[1][1], granades[2][1], granades[3][1], granades[4][1], granades[5][1], granades[6][1]);
 local TASER = gui.Checkbox(GROUP, "autobuy.taser", "Buy Taser", false);
 local DEFUSER = gui.Checkbox(GROUP, "autobuy.defuser", "Buy Defuse Kit", false);
-gui.Text(GROUP, "Auto Buy - Made By Rab(SamzSakerz#4758) ported by Clipper(superyu'#7167)");
+gui.Text(GROUP, "Auto Buy - Made By Rab(SamzSakerz#4758) ported by Clipper(superyu'#7167) Slight modifications by Tubify (Tubify#6969)");
 
 local function buy(wat)
     if (wat == nil) then return end;

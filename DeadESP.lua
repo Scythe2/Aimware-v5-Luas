@@ -21,6 +21,7 @@ callbacks.Register("Draw", function()
            gui.SetValue("esp.overlay.enemy.flashed", 0)
            gui.SetValue("esp.overlay.enemy.reloading", 0)
            gui.SetValue("esp.overlay.enemy.defusing", 0)
+			gui.SetValue("esp.overlay.weapon.ammo", 0)
       else
            if (local_player:IsAlive()) then
                local w, h = draw.GetScreenSize()
@@ -36,6 +37,7 @@ callbacks.Register("Draw", function()
            gui.SetValue("esp.overlay.enemy.name", 1)
            gui.SetValue("esp.overlay.enemy.box", 1)
            gui.SetValue("esp.overlay.enemy.precision", 1)
+gui.SetValue("esp.overlay.weapon.ammo", 0)
        end
    end
 end)

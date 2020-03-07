@@ -6,20 +6,22 @@ local GH_ACTION_COOLDOWN = 30;
 local GAME_COMMAND_COOLDOWN = 40;
 local GRENADE_SAVE_FILE_NAME = "grenade_helper_data.dat";
 
-local ButtonPosition = gui.Reference("VISUALS", "Other", "Extra");
+local TabPosition = gui.Reference("VISUALS");
 
-local MULTIBOX = gui.Groupbox(ButtonPosition, "Grenade Helper", 0, 215, 265, 400);
+local TAB = gui.Tab(TabPosition, "gh_tab", "Grenade Helper");
+
+local MULTIBOX = gui.Groupbox(TAB, "Grenade Helper", 15, 15, 295, 400);
 
 local GH_ENABLED = gui.Checkbox( MULTIBOX, "gh_enabled", "Grenade Helper Enabled", 1 );
-local RECT_SIZE = gui.Slider(MULTIBOX, "gh_rect_size", "GH Throw Rect Size", 10, 0, 25);
-local GH_CHECKBOX_THROWRECT = gui.Checkbox( MULTIBOX, "gh_ch_throw", "GH Throw Rectangle", 1 );
-local GH_CHECKBOX_HELPERLINE = gui.Checkbox( MULTIBOX, "gh_ch_throwline", "GH Throw Helper Line", 1 );
-local GH_CHECKBOX_BOXSTAND = gui.Checkbox( MULTIBOX, "gh_ch_standbox", "GH Stand Box", 1 );
-local GH_CHECKBOX_OOD = gui.Checkbox( MULTIBOX, "gh_ch_standbox_ood", "GH Stand Box Out of Distance", 1 );
-local GH_CHECKBOX_TEXT = gui.Checkbox( MULTIBOX, "gh_ch_text", "GH Text", 1 );
-local GH_VISUALS_DISTANCE_SL = gui.Slider(MULTIBOX, "gh_max_distance", "GH Max Distance", 3000, 0, 5000);
-local GH_CHECKBOX_FIXSTRAFE = gui.Checkbox(MULTIBOX, "gh_fix_strafe", "GH Disable Autostrafe", 1);
-local GH_CHECKBOX_FIXSTRAFEAIR = gui.Checkbox(MULTIBOX, "gh_fix_airstrafe", "GH Disable Airstrafe", 1);
+local RECT_SIZE = gui.Slider(MULTIBOX, "gh_rect_size", "Throw Rect Size", 10, 0, 25);
+local GH_CHECKBOX_THROWRECT = gui.Checkbox( MULTIBOX, "gh_ch_throw", "Throw Rectangle Enabled", 1 );
+local GH_CHECKBOX_HELPERLINE = gui.Checkbox( MULTIBOX, "gh_ch_throwline", "Throw Helper Line Enabled", 1 );
+local GH_CHECKBOX_BOXSTAND = gui.Checkbox( MULTIBOX, "gh_ch_standbox", "Stand Box Enabled", 1 );
+local GH_CHECKBOX_OOD = gui.Checkbox( MULTIBOX, "gh_ch_standbox_ood", "Stand Box Out of Distance Custom Color Enabled", 1 );
+local GH_CHECKBOX_TEXT = gui.Checkbox( MULTIBOX, "gh_ch_text", "Text Enabled (Name)", 1 );
+local GH_VISUALS_DISTANCE_SL = gui.Slider(MULTIBOX, "gh_max_distance", "Max Distance", 3000, 0, 5000);
+local GH_CHECKBOX_FIXSTRAFE = gui.Checkbox(MULTIBOX, "gh_fix_strafe", "Affect Autostrafe", 1);
+local GH_CHECKBOX_FIXSTRAFEAIR = gui.Checkbox(MULTIBOX, "gh_fix_airstrafe", "Affect Airstrafe", 1);
 local THROW_RADIUS = gui.Slider(MULTIBOX, "gh_box_radius", "GH Box Size", 20, 0, 50);
 
 
@@ -447,24 +449,28 @@ function getThrowPosition(pos_x, pos_y, pos_z, ax, ay, z_offset)
 end
 
 function getWeaponName(me)
-    local my_weapon = me:GetPropEntity("m_hActiveWeapon");
-    if (my_weapon == nil) then
-        return nil;
-    end
+	if me ~= nil then
+		local my_weapon = me:GetPropEntity("m_hActiveWeapon");
+		if (my_weapon == nil) then
+			return nil;
+		end
 
-    local weapon_name = my_weapon:GetClass();
-    weapon_name = weapon_name:sub("CWeapon", "");
-    weapon_name = weapon_name:lower();
+		local weapon_name = my_weapon:GetClass();
+		if weapon_name ~= nil then
+			weapon_name = weapon_name:gsub("CWeapon", "");
+			weapon_name = weapon_name:lower();
 
-    if (weapon_name:sub(1, 1) == "c") then
-        weapon_name = weapon_name:sub(2)
-    end
+			if (weapon_name:sub(1, 1) == "c") then
+				weapon_name = weapon_name:sub(2)
+			end
 
-    if (weapon_name == "incendiarygrenade") then
-        weapon_name = "molotovgrenade";
-    end
-
-    return weapon_name;
+			if (weapon_name == "incendiarygrenade") then
+				weapon_name = "molotovgrenade";
+			end
+		end
+		return weapon_name;
+	end
+	return nil;
 end
 
 function getDistanceToTarget(my_x, my_y, my_z, t_x, t_y, t_z)
