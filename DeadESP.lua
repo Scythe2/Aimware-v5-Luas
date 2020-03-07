@@ -4,12 +4,18 @@ callbacks.Register("Draw", function()
    if (local_player == NULL or local_player == nil) then
        return
    else
-       if (input.IsButtonReleased(78)) then
+   if (input.IsButtonReleased(78)) then   	-- N key toggles DeadESP on/off at all. If u want another key change number. 
+						--(if u need help to find numbers of keys use: https://keycode.info/)
            toggle = not toggle
-       end
+   end
        if (local_player:IsAlive()) then
+	local w, h = draw.GetScreenSize()
+        draw.SetFont(draw.CreateFont("Tahoma", 25, 100))
+        draw.Color(128, 0, 0, 255)
+        draw.TextShadow(415, 1046, "On")
+        end
            gui.SetValue("esp.chams.enemy.occluded", 0)
-		   gui.SetValue("esp.chams.enemy.overlay", 0)
+	   gui.SetValue("esp.chams.enemy.overlay", 0)
            gui.SetValue("esp.chams.enemy.visible", 4)
            gui.SetValue("esp.overlay.enemy.health.healthbar", 0)
            gui.SetValue("esp.overlay.enemy.weapon", 0)
@@ -21,23 +27,22 @@ callbacks.Register("Draw", function()
            gui.SetValue("esp.overlay.enemy.flashed", 0)
            gui.SetValue("esp.overlay.enemy.reloading", 0)
            gui.SetValue("esp.overlay.enemy.defusing", 0)
-			gui.SetValue("esp.overlay.weapon.ammo", 0)
+	   gui.SetValue("esp.overlay.weapon.ammo", 0)
       else
-           if (local_player:IsAlive()) then
-               local w, h = draw.GetScreenSize()
-               draw.SetFont(draw.CreateFont("Tahoma", 25, 100))
-               draw.Color(128, 0, 0, 255)
-               draw.TextShadow(415, 1046, "On")
-           end
            gui.SetValue("esp.chams.enemy.occluded", 3)
-		   gui.SetValue("esp.chams.enemy.overlay", 0)
+	   gui.SetValue("esp.chams.enemy.overlay", 0)
            gui.SetValue("esp.chams.enemy.visible", 4)
            gui.SetValue("esp.overlay.enemy.health.healthbar", 1)
            gui.SetValue("esp.overlay.enemy.weapon", 1)
            gui.SetValue("esp.overlay.enemy.name", 1)
            gui.SetValue("esp.overlay.enemy.box", 1)
            gui.SetValue("esp.overlay.enemy.precision", 1)
-gui.SetValue("esp.overlay.weapon.ammo", 0)
+	   gui.SetValue("esp.overlay.enemy.scoped", 0)
+           gui.SetValue("esp.overlay.enemy.planting", 0)
+           gui.SetValue("esp.overlay.enemy.flashed", 0)
+           gui.SetValue("esp.overlay.enemy.reloading", 0)
+           gui.SetValue("esp.overlay.enemy.defusing", 0)
+	   gui.SetValue("esp.overlay.weapon.ammo", 0)
        end
    end
 end)
