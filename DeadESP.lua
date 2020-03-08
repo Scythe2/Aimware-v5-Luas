@@ -1,7 +1,7 @@
 -- DeadESP
 local w,h = 0,0
 local rage_ref_extra = gui.Reference("RAGEBOT", "AIMBOT", "AUTOMATION");
-local changeKey = gui.Keybox(rage_ref_extra, "wallhackkey", "Wallhack key", 18); 
+local changeKey = gui.Keybox(rage_ref_extra, "wallhackkey", "Wallhack key", 18); 		-- Hold Alt-key to enable enemy.occluded chams
 
 
 local function ESP_Always_OnDead( ) 
@@ -13,13 +13,16 @@ w, h = draw.GetScreenSize()
 	end
 
 
-	if entities.GetLocalPlayer():IsAlive() == true and (input.IsButtonDown(changeKey:GetValue())) then			
+	if entities.GetLocalPlayer():IsAlive() == true and (input.IsButtonDown(changeKey:GetValue())) then
+			
 			
 			draw.Color(128,0,0,255)
-			draw.TextShadow(w/2,h/2, "Visuals On")
-			gui.SetValue("esp.chams.enemy.occluded","4")		
+			draw.Text(w/2, h/2, "Visuals On")
+			gui.SetValue("esp.chams.enemy.occluded","4")
+		
 
-	else
+
+	else
 		if entities.GetLocalPlayer():IsAlive() == true then
             
 			gui.SetValue("esp.overlay.enemy.name", false)
@@ -47,7 +50,7 @@ w, h = draw.GetScreenSize()
             gui.SetValue("esp.overlay.enemy.box", true)
             gui.SetValue("esp.overlay.enemy.hasdefuser", true)
             gui.SetValue("esp.overlay.enemy.hasc4", true)
-			gui.SetValue("esp.chams.enemy.overlay", Wireframe)
+			gui.SetValue("esp.chams.enemy.overlay", "1")
 end
 end			
 end	
